@@ -1,5 +1,5 @@
-import java.net.*;
 import java.io.*;
+import java.net.*;
 
 class DssimClient {
     public static void main(String args[]) throws Exception {
@@ -7,44 +7,60 @@ class DssimClient {
         BufferedReader inputStream = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         DataOutputStream outputStream = new DataOutputStream(socket.getOutputStream());
 
-        //Send HELO
-        outputStream.write(("HELO\n").getBytes());
-        outputStream.flush();
-        //Response
-        System.out.println("Ds-sim Response: " + inputStream.readLine());
+        try {
+            // Send HELO
+            outputStream.write(("HELO\n").getBytes());
+            outputStream.flush();
+            // Response
+            System.out.println("Ds-sim Response: " + inputStream.readLine());
+        } catch (Exception e) {
+            System.err.println(e);
+        }
 
+        try {
+            // EX 2.2
+            // Send AUTH
+            String username = System.getProperty("user.name");
+            outputStream.write(("AUTH " + username + "\n").getBytes());
+            // outputStream.write(("AUTH beau\n").getBytes());
+            outputStream.flush();
+            System.out.println("Authenticated: " + username);
+            // Response
+            System.out.println("Ds-sim Response: " + inputStream.readLine());
+        } catch (Exception e) {
+            System.err.println(e);
+        }
 
-        //EX 2.2
-        //Send AUTH
-        String username = System.getProperty("user.name");
-		outputStream.write(("AUTH " + username + "\n").getBytes());
-        // outputStream.write(("AUTH beau\n").getBytes());
-        outputStream.flush();
-		System.out.println("Authenticated: " + username);
-        //Response
-        System.out.println("Ds-sim Response: " + inputStream.readLine());
+        // Send REDY
+        try {
+            outputStream.write(("REDY\n").getBytes());
+            outputStream.flush();
+            // Response
+            System.out.println("Ds-sim Response: " + inputStream.readLine());
+        } catch (Exception e) {
+            System.err.println(e);
+        }
 
-
-
-        //Send REDY
-        outputStream.write(("REDY\n").getBytes());
-        outputStream.flush();
-        //Response
-        System.out.println("Ds-sim Response: " + inputStream.readLine());
-
-
-
-
-        //Send QUIT
+        try {
+        // Send QUIT
         outputStream.write(("QUIT\n").getBytes());
         outputStream.flush();
-        //Response
+        // Response
         System.out.println("Ds-sim Response: " + inputStream.readLine());
+        } catch (Exception e) {
+            System.err.println(e);
+        }
 
-
-        //Close the streams and sockets
+        // Close the streams and sockets
         outputStream.close();
         inputStream.close();
         socket.close();
+    }
+
+    public DssimClient(String address, int port) {
+        try {
+        } catch (Exception e) {
+            System.err.println(e);
+        }
     }
 }
