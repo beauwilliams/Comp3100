@@ -1,0 +1,8 @@
+default:
+    echo 'Hello, world!'
+server:
+    src/pre-compiled/aarch64/ds-server -c configs/sample-configs/ds-sample-config01.xml -v brief
+client:
+    src/pre-compiled/aarch64/ds-client
+interactive:
+    src/pre-compiled/aarch64/ds-server -i -all -v
