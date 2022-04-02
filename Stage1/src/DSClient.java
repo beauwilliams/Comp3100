@@ -3,7 +3,7 @@ import java.net.*;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
-class DssimClient {
+public class DSClient {
   public static void main(String args[]) throws Exception {
     try {
       Socket socket = new Socket("127.0.0.1", 50000);
@@ -87,7 +87,7 @@ class DssimClient {
             outputStream.write(("SCHD " + jobID + " " + SERVER[0] + " " + SERVER[1] + "\n").getBytes());
             System.out.println("SCHD " + jobID + " " + SERVER[0] + " " + SERVER[1]);
             // TimeUnit.SECONDS.sleep(2);
-            outputStream.write(("OK"+"\n").getBytes());
+            outputStream.write(("REDY"+"\n").getBytes());
           }
         }
 
@@ -140,13 +140,6 @@ class DssimClient {
     } catch (Exception e) {
       System.out.println("Server not running");
       System.exit(0);
-    }
-  }
-
-  public DssimClient(String address, int port) {
-    try {
-    } catch (Exception e) {
-      System.err.println(e);
     }
   }
 }
