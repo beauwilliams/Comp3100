@@ -111,7 +111,7 @@ class DssimClient {
 
 
 
-        outputStream.write(("OK"+"\n").getBytes());
+        outputStream.write(("QUIT"+"\n").getBytes());
         System.out.println("Job scheduled to largest server(s) successfully");
 
 

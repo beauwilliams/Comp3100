@@ -11,3 +11,11 @@ This project will involve developing a job scheduler using java as the chosen la
 
 Student_Name: Beau Williams
 Student_ID: 45456070
+
+## Just Commands
+
+*It is recommended to install casey/just however you can find all the commands in ./justfile and detailed below*
+| _Command_      | _Description_ |
+| -------------- | ------------- |
+| `TODO` |  Todo |
+
