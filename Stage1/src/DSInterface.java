@@ -118,7 +118,9 @@ public class DSInterface {
     try {
       Servers<Server> servers = new Servers<Server>(numServers);
         for (int i = 0; i < numServers; i++) {
-          servers.addServer(new Server(receive()));
+        String res = receive();
+        System.out.println(res);
+        servers.addServer(new Server(res));
         System.out.println(servers.getServer(i));
         }
       return servers;

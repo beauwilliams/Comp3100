@@ -24,7 +24,7 @@ public class DSClient {
       System.out.println(data.toString());
       Servers<Server> servers = dsserver.getServers(data.getNumServers());
       // System.out.println(servers.size());
-      System.out.println(dsserver.getHighestCore(servers));
+      // System.out.println(dsserver.getHighestCore(servers));
       // Servers<Server> largest = dsserver.getLargestServers(servers);
 
       // System.out.println(largest.size());
