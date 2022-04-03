@@ -4,139 +4,113 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 public class DSClient {
+
+
+  public static class DSInterface {
+    private Socket socket;
+    private BufferedReader in;
+    private DataOutputStream out;
+    private String host;
+    private int port;
+    private boolean connected;
+
+
+    public final String OK = "OK";
+    public final String HELLO = "HELO";
+    public final String READY = "REDY";
+    public final String AUTHENTTICATE = "AUTH";
+    public final String NONE = "NONE";
+    public final String QUIT = "QUIT";
+    public final String GETALL = "GETS All";
+    public final String GETCAPABLE = "GETS Capable";
+    public final String SCHEDULE = "SCHD";
+    public final String JOBN = "JOBN";
+    public final String JOBP = "JOBP";
+    public final String JCPL = "JCPL";
+    public final String DOT = ".";
+    public final String ERROR = "ERR";
+    public final String DATA = "DATA";
+
+
+    public DSInterface(String host, int port) {
+      this.host = host;
+      this.port = port;
+      this.connected = false;
+    }
+
+    public void connect() throws IOException {
+      socket = new Socket(host, port);
+      in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+      // out = new PrintWriter(socket.getOutputStream(), true);
+      out = new DataOutputStream(socket.getOutputStream());
+      connected = true;
+    }
+
+    public void disconnect() throws IOException {
+      if (connected) {
+        socket.close();
+        connected = false;
+      }
+    }
+
+    public void send(String msg) throws IOException {
+      out.write((msg+"\n").getBytes());
+      out.flush();
+    }
+
+    public String receive() throws IOException {
+      return in.readLine();
+    }
+
+     /**
+     * @dev: DS-Sim handhake protocol implementation
+     * @param input - The input stream
+     * @param output - The output stream
+     */
+    public void authenticateUser() throws IOException {
+      String username = System.getProperties().getProperty("user.name");
+      send(HELLO);
+      send(AUTHENTTICATE + " " + username+"\n");
+      System.out.println(receive());
+      System.out.println(receive());
+
+
+    }
+
+    public void getAllJobs() throws IOException {
+      //Gets JOBN
+      send(READY);
+      System.out.println(receive());
+      //Gets DATA
+      send(GETALL);
+      System.out.println(receive());
+    }
+  }
+
+
   public static void main(String args[]) throws Exception {
     try {
-      Socket socket = new Socket("127.0.0.1", 50000);
+      /* Socket socket = new Socket("127.0.0.1", 50000);
       BufferedReader inputStream =
       new BufferedReader(new InputStreamReader(socket.getInputStream()));
       DataOutputStream outputStream =
-          new DataOutputStream(socket.getOutputStream());
-      try {
-        // Send HELO
-        outputStream.write(("HELO\n").getBytes());
-        outputStream.flush();
-        // Response
-        System.out.println("Ds-sim Response: " + inputStream.readLine());
-      } catch (Exception e) {
-        System.err.println(e);
-      }
+          new DataOutputStream(socket.getOutputStream()); */
 
-      try {
-        // EX 2.2
-        // Send AUTH
-        String username = System.getProperty("user.name");
-        outputStream.write(("AUTH " + username + "\n").getBytes());
-        // outputStream.write(("AUTH beau\n").getBytes());
-        outputStream.flush();
-        System.out.println("Authenticated: " + username);
-        // Response
-        System.out.println("Ds-sim Response: " + inputStream.readLine());
-      } catch (Exception e) {
-        System.err.println(e);
-      }
+      //Write a function to send a handshake message to the server
 
-      // Send REDY
-      try {
-        outputStream.write(("REDY\n").getBytes());
-        outputStream.flush();
-        // Response
-        // System.out.println("Ds-sim Response: " + inputStream.readLine());
-        //Gets the job
-        String JOBN = inputStream.readLine();
-        System.out.println(JOBN);
-
-        //Splits job and gets just the specs needed
-        // submit time / job id / core / memory / disk
-        String[] JOBN_ARRAY = JOBN.split(" ");
-        String spec = JOBN_ARRAY[4] + " " + JOBN_ARRAY[5] + " " + JOBN_ARRAY[6];
-        String jobID = JOBN_ARRAY[1];
-
-        //Gets the capable servers
-        outputStream.write(("GETS Capable " + spec + "\n").getBytes());
-        String DATA = inputStream.readLine();
-
-        //Gets the DATA returned from GETS Capable
-        System.out.println(DATA);
-        String[] DATA_ARRAY = DATA.split(" ");
-        outputStream.write(("OK\n").getBytes());
-
-        //Gets the servers and also saves the highest core count found
-        int highest_core = 0;
-        int numJobs = Integer.valueOf(DATA_ARRAY[1]);
-        ArrayList<String> SERVER_LIST = new ArrayList<String>();
-        for (int i = 0; i < numJobs; i++) {
-          // System.out.println(inputStream.readLine());
-          SERVER_LIST.add(inputStream.readLine());
-          System.out.println(SERVER_LIST.get(i));
-          int numCores = Integer.valueOf(SERVER_LIST.get(i).split(" ")[4]);
-          if (numCores > highest_core) {
-            highest_core = numCores;
-          }
-        }
-        System.out.println(highest_core);
-        outputStream.write(("OK"+"\n").getBytes());
-
-
-        //Gets a list of the largest servers for LRR
-        ArrayList<String> LARGEST_SERVER_LIST = new ArrayList<String>();
-        for (int i = 0; i < numJobs; i++) {
-          if (Integer.valueOf(SERVER_LIST.get(i).split(" ")[4]) == highest_core) {
-            LARGEST_SERVER_LIST.add(SERVER_LIST.get(i));
-          System.out.println(SERVER_LIST.get(i));
-            String[] SERVER = SERVER_LIST.get(i).split(" ");
-            outputStream.write(("SCHD " + jobID + " " + SERVER[0] + " " + SERVER[1] + "\n").getBytes());
-            System.out.println("SCHD " + jobID + " " + SERVER[0] + " " + SERVER[1]);
-            // TimeUnit.SECONDS.sleep(2);
-            outputStream.write(("REDY"+"\n").getBytes());
-          }
-        }
-
-        // rvc JOBN 37 0 1135 700 3800
-        // inputStream.readline() //split me into array
-        // submit time / job id / core / memory / disk
-        // then send....
-        // GETS Capable 3 700 3800
-        // rcv DATA 30 24
-        // numRecords / length records
-        // schedule 1 job SCHD 0 xlarge 0
-        // outputStream.write(("OK\n").getBytes());
+      //Write a function to receive a handshake message from the server
 
 
 
 
-        // outputStream.write(("SCHD 0 super-silk 0\n").getBytes());
+      final String host = "127.0.0.1";
+      final int port = 50000;
+      DSInterface dsserver = new DSInterface(host,port);
+      dsserver.connect();
+      dsserver.authenticateUser();
+      dsserver.getAllJobs();
 
 
-
-
-
-
-        outputStream.write(("QUIT"+"\n").getBytes());
-        System.out.println("Job scheduled to largest server(s) successfully");
-
-
-
-        //WEEK 6 ONWARDS......
-        // use for loop based on numRecords
-      } catch (Exception e) {
-        System.err.println(e);
-      }
-
-
-      /* try {
-        // Send QUIT
-        outputStream.write(("QUIT\n").getBytes());
-        outputStream.flush();
-        // Response
-        System.out.println("Ds-sim Response: " + inputStream.readLine());
-      } catch (Exception e) {
-        System.err.println(e);
-      } */
-
-      // Close the streams and sockets
-      outputStream.close();
-      inputStream.close();
-      socket.close();
     } catch (Exception e) {
       System.out.println("Server not running");
       System.exit(0);
