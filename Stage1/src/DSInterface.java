@@ -35,6 +35,8 @@ public class DSInterface {
     this.connected = false;
   }
 
+  private String[] split(String s) { return s.split(" "); }
+
   public void connect() throws IOException {
     socket = new Socket(host, port);
     in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -76,28 +78,75 @@ public class DSInterface {
   public Job getJob() throws IOException {
     try {
       send(READY);
-      return new Job(receive());
+      String res = receive();
+      if (split(res)[1].equals(JOBN)) {
+        System.out.println("Error not JOBN: " + split(res)[0]);
+        return null;
+      }
+      return new Job(res);
     } catch (IOException e) {
       System.err.println(e);
       return null;
     }
   }
 
-  public void getCapableServers(String spec) throws IOException {
+  public Data getCapable(String spec) throws IOException {
     try {
       send(GETCAPABLE + " " + spec);
-      System.out.println(receive());
+      String res = receive();
+      return new Data(Integer.parseInt(split(res)[1]), Integer.parseInt(split(res)[2]));
     } catch (IOException e) {
       System.err.println(e);
+      return new Data();
     }
   }
 
-  public void getAllServers() throws IOException {
+  public Data getAll() throws IOException {
     try {
       send(GETALL);
-      System.out.println(receive());
+      String res = receive();
+      return new Data(Integer.parseInt(split(res)[1]), Integer.parseInt(split(res)[2]));
     } catch (IOException e) {
       System.err.println(e);
+      return new Data();
     }
+  }
+
+
+  public Servers<Server> getServers(int numServers) throws Exception {
+    send(OK);
+    try {
+      Servers<Server> servers = new Servers<Server>(numServers);
+        for (int i = 0; i < numServers; i++) {
+          servers.addServer(new Server(receive()));
+        System.out.println(servers.getServer(i));
+        }
+      return servers;
+    } catch (Exception e) {
+      System.err.println(e);
+      return new Servers<Server>();
+    }
+  }
+
+  public int getHighestCore(Servers<Server> servers) {
+    int highestCore = 0;
+    for (Server server : servers) {
+      System.out.println(server.getCore());
+      if (server.getCore() > highestCore) {
+        highestCore = server.getCore();
+      }
+    }
+    return highestCore;
+  }
+
+  public Servers<Server> getLargestServers(Servers<Server> servers) {
+    Servers<Server> largestServers = new Servers<Server>();
+    int highestCore = getHighestCore(servers);
+    for (Server server : servers) {
+      if (server.getCore() == highestCore) {
+        largestServers.addServer(server);
+      }
+    }
+    return largestServers;
   }
 }

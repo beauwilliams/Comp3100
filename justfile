@@ -1,7 +1,7 @@
 default:
 	echo hello
 client:
-	javac **/**/*.java && 	java -cp java -cp **/bin DSClient.DSClient
+	javac **/**/*.java -d Stage1/bin && java -cp java -cp Stage1/bin DSClient.DSClient
 test:
 	javac ./Stage1/src/DSClient.java -d ./Stage1/test/ && cd ./Stage1/test/ && ./S1Tests-wk6.sh DSClient.class -n
 server:

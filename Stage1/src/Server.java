@@ -14,6 +14,16 @@ public class Server {
     this.disk = disk;
   }
 
+  public Server(String server){
+    String[] serverInfo = server.split(" ");
+    this.name = serverInfo[0];
+    this.type = serverInfo[1];
+    this.state = serverInfo[2];
+    this.core = Integer.parseInt(serverInfo[3]);
+    this.memory = Integer.parseInt(serverInfo[4]);
+    this.disk = Integer.parseInt(serverInfo[5]);
+  }
+
   public String getName() { return name; }
 
   public String getType() { return type; }

@@ -16,9 +16,26 @@ public class DSClient {
       DSInterface dsserver = new DSInterface(host, port);
       dsserver.connect();
       dsserver.authenticateUser();
+
+      // while(true) {
       Job job = dsserver.getJob();
       System.out.println(job.toString());
-      dsserver.getCapableServers(job.getSpec());
+      Data data = dsserver.getCapable(job.getSpec());
+      System.out.println(data.toString());
+      Servers<Server> servers = dsserver.getServers(data.getNumServers());
+      // System.out.println(servers.size());
+      System.out.println(dsserver.getHighestCore(servers));
+      // Servers<Server> largest = dsserver.getLargestServers(servers);
+
+      // System.out.println(largest.size());
+      /* if (dsserver.receive() == dsserver.NONE) {
+          break;
+        }
+
+        if (dsserver.receive() == dsserver.DOT) {
+          break;
+        } */
+      // }
       // TODO: Implement DS-Sim client - LRR
     } catch (Exception e) {
       System.out.println("Server not reachable or client error");
@@ -26,13 +43,3 @@ public class DSClient {
     }
   }
 }
-
-
-
-
-
-
-
-
-
-
