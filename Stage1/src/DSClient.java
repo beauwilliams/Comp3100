@@ -5,15 +5,13 @@ import java.util.concurrent.TimeUnit;
 
 public class DSClient {
 
-
   public static class DSInterface {
     private Socket socket;
     private BufferedReader in;
-    private DataOutputStream out;
+    private PrintWriter out;
     private String host;
     private int port;
     private boolean connected;
-
 
     public final String OK = "OK";
     public final String HELLO = "HELO";
@@ -31,6 +29,12 @@ public class DSClient {
     public final String ERROR = "ERR";
     public final String DATA = "DATA";
 
+    private String[] job;
+    private String[] data;
+
+    private String[] split(String s) {
+      return s.split(" ");
+    }
 
     public DSInterface(String host, int port) {
       this.host = host;
@@ -41,8 +45,8 @@ public class DSClient {
     public void connect() throws IOException {
       socket = new Socket(host, port);
       in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-      // out = new PrintWriter(socket.getOutputStream(), true);
-      out = new DataOutputStream(socket.getOutputStream());
+      out = new PrintWriter(socket.getOutputStream(), true);
+      // out = new DataOutputStream(socket.getOutputStream());
       connected = true;
     }
 
@@ -54,65 +58,63 @@ public class DSClient {
     }
 
     public void send(String msg) throws IOException {
-      out.write((msg+"\n").getBytes());
-      out.flush();
+      out.println(msg);
     }
 
-    public String receive() throws IOException {
-      return in.readLine();
-    }
+    public String receive() throws IOException { return in.readLine(); }
 
-     /**
+    /**
      * @dev: DS-Sim handhake protocol implementation
-     * @param input - The input stream
      * @param output - The output stream
      */
     public void authenticateUser() throws IOException {
-      String username = System.getProperties().getProperty("user.name");
-      send(HELLO);
-      send(AUTHENTTICATE + " " + username+"\n");
-      System.out.println(receive());
-      System.out.println(receive());
-
-
+      try {
+        String username = System.getProperties().getProperty("user.name");
+        send(HELLO);
+        send(AUTHENTTICATE + " " + username + "\n");
+        System.out.println(receive());
+        System.out.println(receive());
+      } catch (IOException e) {
+        System.err.println(e);
+      }
     }
 
-    public void getAllJobs() throws IOException {
-      //Gets JOBN
-      send(READY);
-      System.out.println(receive());
-      //Gets DATA
-      send(GETALL);
-      System.out.println(receive());
+    /**
+     * @param output - JOBN
+     */
+    public void getJob() throws IOException {
+      try {
+        send(READY);
+        //TODO: Split jobs into object
+        job = split(receive());
+      } catch (IOException e) {
+        System.err.println(e);
+      }
+    }
+
+    public void getCapableServers() throws IOException {
+      try {
+        send(GETALL);
+        System.out.println(receive());
+      } catch (IOException e) {
+        System.err.println(e);
+      }
     }
   }
-
+        // Gets DATA
 
   public static void main(String args[]) throws Exception {
     try {
-      /* Socket socket = new Socket("127.0.0.1", 50000);
-      BufferedReader inputStream =
-      new BufferedReader(new InputStreamReader(socket.getInputStream()));
-      DataOutputStream outputStream =
-          new DataOutputStream(socket.getOutputStream()); */
-
-      //Write a function to send a handshake message to the server
-
-      //Write a function to receive a handshake message from the server
-
-
-
-
       final String host = "127.0.0.1";
       final int port = 50000;
-      DSInterface dsserver = new DSInterface(host,port);
+      DSInterface dsserver = new DSInterface(host, port);
       dsserver.connect();
       dsserver.authenticateUser();
-      dsserver.getAllJobs();
-
-
+      dsserver.getJob();
+      dsserver.getCapableServers();
+      //TODO: Implement DS-Sim client
     } catch (Exception e) {
-      System.out.println("Server not running");
+      System.out.println("Server not running or not reachable");
       System.exit(0);
     }
   }
