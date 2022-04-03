@@ -30,10 +30,6 @@ public class DSClient {
     public final String ERROR = "ERR";
     public final String DATA = "DATA";
 
-    private Job job;
-    private String[] data;
-
-
     public DSInterface(String host, int port) {
       this.host = host;
       this.port = port;
@@ -80,15 +76,13 @@ public class DSClient {
     /**
      * @param output - JOBN
      */
-    public void getJob() throws IOException {
+    public Job getJob() throws IOException {
       try {
         send(READY);
-        //TODO: Split jobs into object
-        // System.out.println(receive());
-        job = new Job(receive());
-        // System.out.println(job.getJobID());
+        return new Job(receive());
       } catch (IOException e) {
         System.err.println(e);
+        return null;
       }
     }
 
@@ -110,7 +104,8 @@ public class DSClient {
       DSInterface dsserver = new DSInterface(host, port);
       dsserver.connect();
       dsserver.authenticateUser();
-      dsserver.getJob();
+      Job job = dsserver.getJob();
+      System.out.println(job.toString());
       dsserver.getCapableServers();
       //TODO: Implement DS-Sim client - LRR
     } catch (Exception e) {
@@ -210,5 +205,14 @@ public class Job {
         return jobName;
     }
 
-
+    public String toString() {
+        return "Job ID: " + jobID + "\n" +
+                "Submit Time: " + submitTime + "\n" +
+                "Estimated Runtime: " + estRuntime + "\n" +
+                "Core: " + core + "\n" +
+                "Memory: " + memory + "\n" +
+                "Disk: " + disk + "\n" +
+                "Status: " + status + "\n" +
+                "Job Name: " + jobName + "\n";
+    }
 }
