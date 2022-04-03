@@ -17,33 +17,28 @@ public class DSClient {
       dsserver.connect();
       dsserver.authenticateUser();
 
-      int i = 0;
-      while (true) {
+      Boolean completed = false;
+      while (!completed) {
 
-        System.out.println("hi");
         Job job = dsserver.getJob();
-        System.out.println("ye");
         if (job != null) {
         Data data = dsserver.getCapable(job.getSpec());
         Servers<Server> servers = dsserver.getServers(data.getNumServers());
         System.out.println(servers.size());
         // System.out.println(dsserver.getHighestCore(servers));
         Servers<Server> largestServers = dsserver.getLargestServer(servers);
-        System.out.println(largestServers.size());
-        // dsserver.send(dsserver.OK);
+        System.out.println("ls srvs size = "+largestServers.size());
+
+
         dsserver.send(dsserver.OK);
-        // TODO: Implement DS-Sim client - LRR
-        // for i > numJobs
-        // schedule server(index)
-        //
         String response = dsserver.receive();
-        System.out.println(response);
-        if (response.equals(dsserver.NONE)) {
-          System.out.println("No servers available");
-          break;
-        }
-        System.out.println("wh");
-        dsserver.scheduleJob(job, largestServers.getServer(i));
+        /* if (response == null) {
+            break;
+        } */
+        // break;
+        // System.out.println(response);
+        // System.out.println("i = "+i);
+        dsserver.scheduleJob(job, largestServers.getServer(0));
 
         /* response = dsserver.receive();
         System.out.println(response); */
@@ -51,11 +46,11 @@ public class DSClient {
         // System.out.println("yo");
         // dsserver.send(dsserver.OK);
 
-        if (i == largestServers.size()) {
+        /* if (i == largestServers.size()-1) {
           i = 0;
         } else {
           i++;
-        }
+        } */
         }
       }
       // if i = largestServers.size() -> i = 0
