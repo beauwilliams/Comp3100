@@ -28,7 +28,7 @@ public class Server {
 
   public String getType() { return type; }
 
-  public Integer getID() { return id; }
+  public Integer getId() { return id; }
 
   public String getState() { return state; }
 

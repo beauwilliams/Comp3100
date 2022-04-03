@@ -17,26 +17,49 @@ public class DSClient {
       dsserver.connect();
       dsserver.authenticateUser();
 
-      // while(true) {
-      Job job = dsserver.getJob();
-      System.out.println(job.toString());
-      Data data = dsserver.getCapable(job.getSpec());
-      System.out.println(data.toString());
-      Servers<Server> servers = dsserver.getServers(data.getNumServers());
-      // System.out.println(servers.size());
-      // System.out.println(dsserver.getHighestCore(servers));
-      // Servers<Server> largest = dsserver.getLargestServers(servers);
+      int i = 0;
+      while (true) {
 
-      // System.out.println(largest.size());
-      /* if (dsserver.receive() == dsserver.NONE) {
+        System.out.println("hi");
+        Job job = dsserver.getJob();
+        System.out.println("ye");
+        if (job != null) {
+        Data data = dsserver.getCapable(job.getSpec());
+        Servers<Server> servers = dsserver.getServers(data.getNumServers());
+        System.out.println(servers.size());
+        // System.out.println(dsserver.getHighestCore(servers));
+        Servers<Server> largestServers = dsserver.getLargestServer(servers);
+        System.out.println(largestServers.size());
+        // dsserver.send(dsserver.OK);
+        dsserver.send(dsserver.OK);
+        // TODO: Implement DS-Sim client - LRR
+        // for i > numJobs
+        // schedule server(index)
+        //
+        String response = dsserver.receive();
+        System.out.println(response);
+        if (response.equals(dsserver.NONE)) {
+          System.out.println("No servers available");
           break;
         }
+        System.out.println("wh");
+        dsserver.scheduleJob(job, largestServers.getServer(i));
 
-        if (dsserver.receive() == dsserver.DOT) {
-          break;
-        } */
-      // }
-      // TODO: Implement DS-Sim client - LRR
+        /* response = dsserver.receive();
+        System.out.println(response); */
+
+        // System.out.println("yo");
+        // dsserver.send(dsserver.OK);
+
+        if (i == largestServers.size()) {
+          i = 0;
+        } else {
+          i++;
+        }
+        }
+      }
+      // if i = largestServers.size() -> i = 0
+      // else i++
     } catch (Exception e) {
       System.out.println("Server not reachable or client error");
       System.exit(0);

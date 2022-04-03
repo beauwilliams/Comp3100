@@ -44,7 +44,7 @@ public class Job {
 
   public void setName(String name) { this.name = name; }
 
-  public Integer getID() { return id; }
+  public Integer getId() { return id; }
 
   public Integer getSubmitTime() { return submitTime; }
 

@@ -64,9 +64,16 @@ public class DSInterface {
     try {
       String username = System.getProperties().getProperty("user.name");
       send(HELLO);
+      receive();
       send(AUTHENTTICATE + " " + username + "\n");
-      System.out.println(receive());
-      System.out.println(receive());
+      String response = receive();
+      if (response.equals(OK)) {
+        System.out.println("Authentication successful");
+      } else {
+        System.out.println("Authentication failed");
+      }
+      /* System.out.println(receive());
+      System.out.println(receive()); */
     } catch (IOException e) {
       System.err.println(e);
     }
@@ -79,7 +86,8 @@ public class DSInterface {
     try {
       send(READY);
       String res = receive();
-      if (split(res)[1].equals(JOBN)) {
+      System.out.println("res: " + res);
+      if (split(res)[0].equals(JCPL)) {
         System.out.println("Error not JOBN: " + split(res)[0]);
         return null;
       }
@@ -87,6 +95,21 @@ public class DSInterface {
     } catch (IOException e) {
       System.err.println(e);
       return null;
+    }
+  }
+
+  public void scheduleJob(Job job, Server server) throws IOException {
+    try {
+      System.out.println(SCHEDULE + " " + job.getId() + " " + server.getType() + " " + server.getId());
+      send(SCHEDULE + " " + job.getId() + " " + server.getType() + " " + server.getId());
+      String res = receive();
+      if (res.equals(OK)) {
+        System.out.println("Job scheduled");
+      } else {
+        System.out.println("Job not scheduled");
+      }
+    } catch (IOException e) {
+      System.err.println(e);
     }
   }
 
@@ -118,10 +141,7 @@ public class DSInterface {
     try {
       Servers<Server> servers = new Servers<Server>(numServers);
         for (int i = 0; i < numServers; i++) {
-        String res = receive();
-        System.out.println(res);
-        servers.addServer(new Server(res));
-        System.out.println(servers.getServer(i));
+        servers.addServer(new Server(receive()));
         }
       return servers;
     } catch (Exception e) {
@@ -133,7 +153,6 @@ public class DSInterface {
   public int getHighestCore(Servers<Server> servers) {
     int highestCore = 0;
     for (Server server : servers) {
-      System.out.println(server.getCore());
       if (server.getCore() > highestCore) {
         highestCore = server.getCore();
       }
@@ -141,9 +160,23 @@ public class DSInterface {
     return highestCore;
   }
 
+  public String getFirstLargestServer(Servers<Server> servers) {
+    int highestCore = 0;
+    String largestServer = "";
+    for (Server server : servers) {
+      if (server.getCore() == getHighestCore(servers)) {
+        highestCore = server.getCore();
+        largestServer = server.getType();
+        break;
+      }
+    }
+    return largestServer;
+  }
+
   public Servers<Server> getLargestServers(Servers<Server> servers) {
     Servers<Server> largestServers = new Servers<Server>();
     int highestCore = getHighestCore(servers);
+    String serverType;
     for (Server server : servers) {
       if (server.getCore() == highestCore) {
         largestServers.addServer(server);
@@ -151,4 +184,35 @@ public class DSInterface {
     }
     return largestServers;
   }
+
+    public Servers<Server> getLargestServer(Servers<Server> servers) {
+
+    Servers<Server> largestServers = new Servers<Server>();
+    int highestCore = getHighestCore(servers);
+    String severType = getFirstLargestServer(servers);
+    for (Server server : servers) {
+      if (server.getCore() == highestCore && server.getType().equals(getFirstLargestServer(servers))) {
+        largestServers.addServer(server);
+      }
+    }
+    return largestServers;
+  }
+
+
+  public Servers<Server> getSmallestServers(Servers<Server> servers) {
+    Servers<Server> smallestServers = new Servers<Server>();
+    int lowestCore = getHighestCore(servers);
+    for (Server server : servers) {
+      if (server.getCore() == lowestCore) {
+        smallestServers.addServer(server);
+      }
+    }
+    return smallestServers;
+  }
+
+  //schedule a job to the server
+  public void schedule(Job job, Server server) throws IOException {
+    send(SCHEDULE + " " + job.getId() + " " + server.getType() + " " + server.getId());
+  }
+
 }
