@@ -3,7 +3,7 @@ default:
 client:
 	javac **/**/*.java -d Stage1/bin && java -cp java -cp Stage1/bin DSClient.DSClient
 test:
-	javac **/**/*.java -d Stage1/test/ && cd ./Stage1/test/ && ./S1Tests-wk6.sh DSClient.DSClient.class -n
+	javac **/**/*.java -d Stage1/test/ && cd ./Stage1/test/ && ./demoS1.sh DSClient.DSClient.class -n
 server:
     ./ds-sim/src/pre-compiled/aarch64/ds-server -n -v all
 ds-server-01:
