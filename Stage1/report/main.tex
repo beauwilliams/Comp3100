@@ -192,7 +192,7 @@ The client design is shown below at a high level by figure \ref{CLIENT}
 The implementation of the client interface for DSSIM follows an object oriented style, with a focus on cleanliness, testable code, as well as extensibility and composobility. Below I will detail the core comnponents of the client side architecture, and how they are implemented.
 
 \subsection*{4.1. Tooling}
-This project was built with the help of a modal text editor neovim\cite{neovim}, coupled with the the Language Server Protocol (LSP)\cite{lsp} providing contextual feedback on errors, code suggestions and more language related feedback. Our client and server is hosted on a VM using multipass, a Ubuntu container orchestrator built by Canonical\cite{multipass}. Lastly we use a task runner called just\cite{just} combined with shell scripts to automate testing, deployment and operation of the DSSIM.
+This project was built with the help of a modal text editor neovim\cite{neovim}, coupled with the the Language Server Protocol (LSP)\cite{lsp} providing contextual feedback on errors, code suggestions and more language related feedback. Our client and server is hosted on a VM using multipass, a Ubuntu container orchestrator built by Canonical. Lastly we use a task runner called just combined with shell scripts to automate testing, deployment and operation of the DSSIM.
 
 \subsection*{4.2. Libraries}
 \begin{itemize}
@@ -287,36 +287,6 @@ We have defined objects such as Server, Servers, Job and Data to encapsulate the
 
 \end{lstlisting}
 \caption{The server data object}
-\end{figure}
-
-\begin{figure}[ht!]
-\begin{lstlisting}
-  private Integer id, submitTime, endTime, estRuntime, core, memory, disk;
-  private String name, status, serverType, serverId;
-
-  public Job(String job) {
-    String[] jobInfo = split(job);
-    this.name = jobInfo[0];
-    if (this.name.equals("JOBN")) {
-    this.submitTime = Integer.parseInt(jobInfo[1]);
-    this.id = Integer.parseInt(jobInfo[2]);
-    this.estRuntime = Integer.parseInt(jobInfo[3]);
-    this.core = Integer.parseInt(jobInfo[4]);
-    this.memory = Integer.parseInt(jobInfo[5]);
-    this.disk = Integer.parseInt(jobInfo[6]);
-    this.status = "waiting";
-    }
-    if (this.name.equals("JCPL")) {
-    this.endTime = Integer.parseInt(jobInfo[1]);
-    this.id = Integer.parseInt(jobInfo[2]);
-    this.serverType = jobInfo[3];
-    this.serverId = jobInfo[4];
-    this.status = "completed";
-    }
-  }
-  
-\end{lstlisting}
-\caption{The job data object}
 \end{figure}
 
 \subsection*{4.6. Scheduler}
