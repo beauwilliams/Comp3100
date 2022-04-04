@@ -74,16 +74,13 @@ public class DSInterface {
       receive();
       send(AUTHENTTICATE + " " + username);
       String response = receive();
-      System.out.println(response);
       if (response.equals(OK)) {
-        System.out.println("Authentication successful");
+        System.out.println("Authentication of " + username + " successful");
         return response;
       } else {
-        System.out.println("Authentication failed");
+        System.out.println("Authentication of " + username + " failed");
         return response;
       }
-      /* System.out.println(receive());
-      System.out.println(receive()); */
     } catch (IOException e) {
       System.err.println(e);
       return null;
@@ -94,11 +91,11 @@ public class DSInterface {
    * @param output - JOBN
    */
   public Job getJob() throws IOException {
-    send(READY);
-    String res = receive();
-    return new Job(res);
-    /* try {
-      if (split(res)[0].equals(NONE)) {
+    try {
+      send(READY);
+      String res = receive();
+      return new Job(res);
+      /* if (split(res)[0].equals(NONE)) {
         System.out.println("quitting");
         send(QUIT);
         return null;
@@ -107,25 +104,22 @@ public class DSInterface {
         System.out.println("Error not JOBN: " + split(res)[0]);
         return new Job(res);
         // return null;
-      }
-      return new Job(res);
+      } */
     } catch (IOException e) {
       System.err.println(e);
       return null;
-    } */
+    }
   }
 
   public String scheduleJob(Job job, Server server) throws IOException {
     try {
-      System.out.println(SCHEDULE + " " + job.getId() + " " + server.getType() +
-                         " " + server.getId());
       send(SCHEDULE + " " + job.getId() + " " + server.getType() + " " +
            server.getId());
       String res = receive();
       if (res.equals(OK)) {
-        System.out.println("Job scheduled");
+      System.out.println("Job "+job.getId()+" scheduled");
       } else {
-        System.out.println("Job not scheduled");
+        System.out.println("Job "+job.getId()+" not scheduled");
       }
       return res;
     } catch (IOException e) {

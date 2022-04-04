@@ -19,6 +19,7 @@ public class DSClient {
       dsserver.connect();
       response = dsserver.authenticateUser();
 
+      System.out.println("Scheduling via LRR");
       Boolean gotLargestServer = false;
       int i = 0;
       while (true) {
@@ -48,7 +49,7 @@ public class DSClient {
       }
       dsserver.send(dsserver.QUIT);
       response = dsserver.receive();
-      System.out.println(response);
+      System.out.println("Scheduling successful with response: "+response);
     } catch (Exception e) {
       System.out.println("Server not reachable or client error");
       System.exit(0);
