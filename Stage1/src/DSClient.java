@@ -49,6 +49,7 @@ public class DSClient {
       }
       dsserver.send(dsserver.QUIT);
       response = dsserver.receive();
+      dsserver.disconnect();
       System.out.println("Scheduling successful with response: "+response);
     } catch (Exception e) {
       System.out.println("Server not reachable or client error");
