@@ -1,13 +1,14 @@
 package DSClient;
 
 public class Job {
-  private Integer id, submitTime, estRuntime, core, memory, disk;
-  private String name, status;
+  private Integer id, submitTime, endTime, estRuntime, core, memory, disk;
+  private String name, status, serverType, serverId;
 
   private String[] split(String s) { return s.split(" "); }
 
-  public Job(Integer submitTime, Integer id, Integer estRuntime,
+  public Job(String name, Integer submitTime, Integer id, Integer estRuntime,
              Integer core, Integer memory, Integer disk) {
+    this.name = name;
     this.submitTime = submitTime;
     this.estRuntime = estRuntime;
     this.core = core;
@@ -18,6 +19,7 @@ public class Job {
   }
 
   public Job(String[] jobInfo) {
+    this.name = jobInfo[0];
     this.submitTime = Integer.parseInt(jobInfo[1]);
     this.id = Integer.parseInt(jobInfo[2]);
     this.estRuntime = Integer.parseInt(jobInfo[3]);
@@ -25,11 +27,12 @@ public class Job {
     this.memory = Integer.parseInt(jobInfo[5]);
     this.disk = Integer.parseInt(jobInfo[6]);
     this.status = "waiting";
-    this.name = "unnamed";
   }
 
   public Job(String job) {
     String[] jobInfo = split(job);
+    this.name = jobInfo[0];
+    if (this.name.equals("JOBN")) {
     this.submitTime = Integer.parseInt(jobInfo[1]);
     this.id = Integer.parseInt(jobInfo[2]);
     this.estRuntime = Integer.parseInt(jobInfo[3]);
@@ -37,8 +40,19 @@ public class Job {
     this.memory = Integer.parseInt(jobInfo[5]);
     this.disk = Integer.parseInt(jobInfo[6]);
     this.status = "waiting";
-    this.name = "unnamed";
+    }
+
+    if (this.name.equals("JCPL")) {
+    this.endTime = Integer.parseInt(jobInfo[1]);
+    this.id = Integer.parseInt(jobInfo[2]);
+    this.serverType = jobInfo[3];
+    this.serverId = jobInfo[4];
+    this.status = "completed";
+    }
+
+
   }
+
 
   public void setStatus(String status) { this.status = status; }
 
@@ -64,6 +78,7 @@ public class Job {
 
   public String toString() {
     return "Job ID: " + id + "\n"
+        + "Job Name: " + name + "\n"
         + "Submit Time: " + submitTime + "\n"
         + "Estimated Runtime: " + estRuntime + "\n"
         + "Core: " + core + "\n"

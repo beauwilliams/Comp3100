@@ -58,6 +58,7 @@ public class DSInterface {
     try {
       return in.readLine();
     } catch (IOException e) {
+      System.out.println("");
       return null;
     }
   }
@@ -66,22 +67,26 @@ public class DSInterface {
    * @dev: DS-Sim handhake protocol implementation
    * @param output - The output stream
    */
-  public void authenticateUser() throws IOException {
+  public String authenticateUser() throws IOException {
     try {
       String username = System.getProperties().getProperty("user.name");
       send(HELLO);
       receive();
       send(AUTHENTTICATE + " " + username + "\n");
       String response = receive();
+      System.out.println(response);
       if (response.equals(OK)) {
         System.out.println("Authentication successful");
+        return response;
       } else {
         System.out.println("Authentication failed");
+        return response;
       }
       /* System.out.println(receive());
       System.out.println(receive()); */
     } catch (IOException e) {
       System.err.println(e);
+      return null;
     }
   }
 
@@ -89,27 +94,28 @@ public class DSInterface {
    * @param output - JOBN
    */
   public Job getJob() throws IOException {
-    try {
-      send(READY);
-      String res = receive();
-      System.out.println("res: " + res);
+    send(READY);
+    String res = receive();
+    return new Job(res);
+    /* try {
       if (split(res)[0].equals(NONE)) {
         System.out.println("quitting");
         send(QUIT);
         return null;
       }
-      if (!split(res)[0].equals(JOBN)) {
+      if (split(res)[0].equals(JCPL)) {
         System.out.println("Error not JOBN: " + split(res)[0]);
-        return null;
+        return new Job(res);
+        // return null;
       }
       return new Job(res);
     } catch (IOException e) {
       System.err.println(e);
       return null;
-    }
+    } */
   }
 
-  public void scheduleJob(Job job, Server server) throws IOException {
+  public String scheduleJob(Job job, Server server) throws IOException {
     try {
       System.out.println(SCHEDULE + " " + job.getId() + " " + server.getType() +
                          " " + server.getId());
@@ -121,8 +127,10 @@ public class DSInterface {
       } else {
         System.out.println("Job not scheduled");
       }
+      return res;
     } catch (IOException e) {
       System.err.println(e);
+      return null;
     }
   }
 
@@ -134,7 +142,7 @@ public class DSInterface {
                       Integer.parseInt(split(res)[2]));
     } catch (IOException e) {
       System.err.println(e);
-      return new Data();
+      return null;
     }
   }
 
@@ -152,21 +160,19 @@ public class DSInterface {
 
   public Servers<Server> getServers(int numServers) throws Exception {
     send(OK);
-    try {
-      Servers<Server> servers = new Servers<Server>(numServers);
-      for (int i = 0; i < numServers; i++) {
-        servers.addServer(new Server(receive()));
-      }
-      return servers;
-    } catch (Exception e) {
-      System.err.println(e);
-      return new Servers<Server>();
+    Servers<Server> servers = new Servers<Server>();
+    for (int i = 0; i < numServers; i++) {
+      String res = receive();
+      servers.addServer(new Server(res));
     }
+    return servers;
   }
 
   public int getHighestCore(Servers<Server> servers) {
     int highestCore = 0;
     for (Server server : servers) {
+      int core = server.getCore();
+      // System.out.println("current core  "+core);
       if (server.getCore() > highestCore) {
         highestCore = server.getCore();
       }
@@ -174,12 +180,10 @@ public class DSInterface {
     return highestCore;
   }
 
-  public String getFirstLargestServer(Servers<Server> servers) {
-    int highestCore = 0;
+  public String getFirstLargestServerType(Servers<Server> servers) {
     String largestServer = "";
     for (Server server : servers) {
       if (server.getCore() == getHighestCore(servers)) {
-        highestCore = server.getCore();
         largestServer = server.getType();
         break;
       }
@@ -187,12 +191,10 @@ public class DSInterface {
     return largestServer;
   }
 
-  public Servers<Server> getLargestServers(Servers<Server> servers) {
+  public Servers<Server> getLargestServersByType(Servers<Server> servers, String serverType) {
     Servers<Server> largestServers = new Servers<Server>();
-    int highestCore = getHighestCore(servers);
-    String serverType;
     for (Server server : servers) {
-      if (server.getCore() == highestCore) {
+      if (server.getType().equals(serverType)) {
         largestServers.addServer(server);
       }
     }
@@ -200,15 +202,15 @@ public class DSInterface {
   }
 
   public Servers<Server> getLargestServer(Servers<Server> servers) {
-
     Servers<Server> largestServers = new Servers<Server>();
-    int highestCore = getHighestCore(servers);
-    String severType = getFirstLargestServer(servers);
+    // System.out.println("core count is"+getHighestCore(servers));
+    int i = 0;
     for (Server server : servers) {
-      if (server.getCore() == highestCore &&
-          server.getType().equals(getFirstLargestServer(servers))) {
+      i++;
+      if (server.getCore() > 64) {
         largestServers.addServer(server);
       }
+      System.out.println(i);
     }
     return largestServers;
   }
@@ -217,6 +219,7 @@ public class DSInterface {
     Servers<Server> smallestServers = new Servers<Server>();
     int lowestCore = getHighestCore(servers);
     for (Server server : servers) {
+
       if (server.getCore() == lowestCore) {
         smallestServers.addServer(server);
       }
@@ -228,5 +231,6 @@ public class DSInterface {
   public void schedule(Job job, Server server) throws IOException {
     send(SCHEDULE + " " + job.getId() + " " + server.getType() + " " +
          server.getId());
+    receive();
   }
 }

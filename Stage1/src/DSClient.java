@@ -13,48 +13,40 @@ public class DSClient {
     try {
       final String host = "127.0.0.1";
       final int port = 50000;
+      String response = "";
+      String serverType = "4xlarge";
       DSInterface dsserver = new DSInterface(host, port);
       dsserver.connect();
-      dsserver.authenticateUser();
+      response = dsserver.authenticateUser();
 
-      Boolean completed = false;
-      while (!completed) {
-
+      int i = 0;
+      while (true) {
         Job job = dsserver.getJob();
-        if (job != null) {
-        Data data = dsserver.getCapable(job.getSpec());
-        Servers<Server> servers = dsserver.getServers(data.getNumServers());
-        System.out.println(servers.size());
-        // System.out.println(dsserver.getHighestCore(servers));
-        Servers<Server> largestServers = dsserver.getLargestServer(servers);
-        System.out.println("ls srvs size = "+largestServers.size());
+        if (job.getName().equals("NONE")) {
+          break;
+        }
 
+        if (job.getName().equals("JOBN")) {
+          // Data data = dsserver.getCapable(job.getSpec());
+          Data data = dsserver.getAll();
+          Servers<Server> servers = dsserver.getServers(data.getNumServers());
+          Servers<Server> largestServers =
+              dsserver.getLargestServersByType(servers, serverType);
 
-        dsserver.send(dsserver.OK);
-        String response = dsserver.receive();
-        /* if (response == null) {
-            break;
-        } */
-        // break;
-        // System.out.println(response);
-        // System.out.println("i = "+i);
-        dsserver.scheduleJob(job, largestServers.getServer(0));
-
-        /* response = dsserver.receive();
-        System.out.println(response); */
-
-        // System.out.println("yo");
-        // dsserver.send(dsserver.OK);
-
-        /* if (i == largestServers.size()-1) {
-          i = 0;
-        } else {
+          dsserver.send(dsserver.OK);
+          response = dsserver.receive();
+          System.out.println(response);
+          if (i >= largestServers.size()) {
+            i = 0;
+          }
+          response = dsserver.scheduleJob(job, largestServers.getServer(i));
+          System.out.println(response);
           i++;
-        } */
         }
       }
-      // if i = largestServers.size() -> i = 0
-      // else i++
+      dsserver.send(dsserver.QUIT);
+      response = dsserver.receive();
+      System.out.println(response);
     } catch (Exception e) {
       System.out.println("Server not reachable or client error");
       System.exit(0);
