@@ -117,9 +117,9 @@ public class DSInterface {
            server.getId());
       String res = receive();
       if (res.equals(OK)) {
-      System.out.println("Job "+job.getId()+" scheduled");
+        System.out.println("Job " + job.getId() + " scheduled");
       } else {
-        System.out.println("Job "+job.getId()+" not scheduled");
+        System.out.println("Job " + job.getId() + " not scheduled");
       }
       return res;
     } catch (IOException e) {
@@ -185,7 +185,8 @@ public class DSInterface {
     return largestServerType;
   }
 
-  public Servers<Server> getLargestServersByType(Servers<Server> servers, String serverType) {
+  public Servers<Server> getLargestServersByType(Servers<Server> servers,
+                                                 String serverType) {
     Servers<Server> largestServers = new Servers<Server>();
     for (Server server : servers) {
       if (server.getType().equals(serverType)) {

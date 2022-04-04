@@ -4,8 +4,8 @@ public class Server {
   private String type, state;
   private Integer id, hourlyRate, core, memory, disk;
 
-  public Server(String type, Integer id, String state, Integer hourlyRate, Integer core,
-                Integer memory, Integer disk) {
+  public Server(String type, Integer id, String state, Integer hourlyRate,
+                Integer core, Integer memory, Integer disk) {
     this.type = type;
     this.id = id;
     this.state = state;
@@ -15,7 +15,7 @@ public class Server {
     this.disk = disk;
   }
 
-  public Server(String server){
+  public Server(String server) {
     String[] serverInfo = server.split(" ");
     this.type = serverInfo[0];
     this.id = Integer.parseInt(serverInfo[1]);

@@ -33,26 +33,23 @@ public class Job {
     String[] jobInfo = split(job);
     this.name = jobInfo[0];
     if (this.name.equals("JOBN")) {
-    this.submitTime = Integer.parseInt(jobInfo[1]);
-    this.id = Integer.parseInt(jobInfo[2]);
-    this.estRuntime = Integer.parseInt(jobInfo[3]);
-    this.core = Integer.parseInt(jobInfo[4]);
-    this.memory = Integer.parseInt(jobInfo[5]);
-    this.disk = Integer.parseInt(jobInfo[6]);
-    this.status = "waiting";
+      this.submitTime = Integer.parseInt(jobInfo[1]);
+      this.id = Integer.parseInt(jobInfo[2]);
+      this.estRuntime = Integer.parseInt(jobInfo[3]);
+      this.core = Integer.parseInt(jobInfo[4]);
+      this.memory = Integer.parseInt(jobInfo[5]);
+      this.disk = Integer.parseInt(jobInfo[6]);
+      this.status = "waiting";
     }
 
     if (this.name.equals("JCPL")) {
-    this.endTime = Integer.parseInt(jobInfo[1]);
-    this.id = Integer.parseInt(jobInfo[2]);
-    this.serverType = jobInfo[3];
-    this.serverId = jobInfo[4];
-    this.status = "completed";
+      this.endTime = Integer.parseInt(jobInfo[1]);
+      this.id = Integer.parseInt(jobInfo[2]);
+      this.serverType = jobInfo[3];
+      this.serverId = jobInfo[4];
+      this.status = "completed";
     }
-
-
   }
-
 
   public void setStatus(String status) { this.status = status; }
 

@@ -16,12 +16,12 @@ public class DSClient {
       dsserver.authenticateUser();
       scheduler.lrrScheduler(dsserver);
       dsserver.send(dsserver.QUIT);
-      System.out.println("Scheduling successful and sent QUIT with response: " + dsserver.receive());
+      System.out.println("Scheduling successful and sent QUIT with response: " +
+                         dsserver.receive());
       dsserver.disconnect();
     } catch (Exception e) {
       System.out.println("Server not reachable or client error");
       System.exit(0);
     }
   }
-
 }
