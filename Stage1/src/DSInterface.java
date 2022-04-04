@@ -72,7 +72,7 @@ public class DSInterface {
       String username = System.getProperties().getProperty("user.name");
       send(HELLO);
       receive();
-      send(AUTHENTTICATE + " " + username + "\n");
+      send(AUTHENTTICATE + " " + username);
       String response = receive();
       System.out.println(response);
       if (response.equals(OK)) {
@@ -172,23 +172,23 @@ public class DSInterface {
     int highestCore = 0;
     for (Server server : servers) {
       int core = server.getCore();
-      // System.out.println("current core  "+core);
       if (server.getCore() > highestCore) {
-        highestCore = server.getCore();
+        highestCore = core;
       }
     }
     return highestCore;
   }
 
   public String getFirstLargestServerType(Servers<Server> servers) {
-    String largestServer = "";
+    String largestServerType = "";
+    // System.out.println("hights core is "+getHighestCore(servers));
     for (Server server : servers) {
       if (server.getCore() == getHighestCore(servers)) {
-        largestServer = server.getType();
+        largestServerType = server.getType();
         break;
       }
     }
-    return largestServer;
+    return largestServerType;
   }
 
   public Servers<Server> getLargestServersByType(Servers<Server> servers, String serverType) {

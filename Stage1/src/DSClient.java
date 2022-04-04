@@ -14,11 +14,12 @@ public class DSClient {
       final String host = "127.0.0.1";
       final int port = 50000;
       String response = "";
-      String serverType = "4xlarge";
+      String serverType = "";
       DSInterface dsserver = new DSInterface(host, port);
       dsserver.connect();
       response = dsserver.authenticateUser();
 
+      Boolean gotLargestServer = false;
       int i = 0;
       while (true) {
         Job job = dsserver.getJob();
@@ -30,17 +31,18 @@ public class DSClient {
           // Data data = dsserver.getCapable(job.getSpec());
           Data data = dsserver.getAll();
           Servers<Server> servers = dsserver.getServers(data.getNumServers());
-          Servers<Server> largestServers =
-              dsserver.getLargestServersByType(servers, serverType);
+          if (gotLargestServer == false) {
+            serverType = dsserver.getFirstLargestServerType(servers);
+            gotLargestServer = true;
+          }
+          Servers<Server> largestServers = dsserver.getLargestServersByType(servers, serverType);
 
           dsserver.send(dsserver.OK);
           response = dsserver.receive();
-          System.out.println(response);
           if (i >= largestServers.size()) {
             i = 0;
           }
           response = dsserver.scheduleJob(job, largestServers.getServer(i));
-          System.out.println(response);
           i++;
         }
       }
