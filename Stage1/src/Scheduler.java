@@ -23,7 +23,7 @@ public class Scheduler {
         if (firstRun) {
           firstRun = false;
           System.out.println("First run..");
-          data = dsserver.getAll();
+          data = dsserver.getCapable(job.getSpec());
           servers = dsserver.getServers(data.getNumServers());
           allServers = servers;
         } else {
