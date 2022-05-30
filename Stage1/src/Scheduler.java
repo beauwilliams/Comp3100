@@ -38,19 +38,20 @@ public class Scheduler {
         }
         Servers<Server> largestServers =
             dsserver.getLargestServersByType(allServers, serverType);
-        if (servers.size() != 0) {
-          dsserver.send(dsserver.OK);
-          response = dsserver.receive();
-        } else {
-          System.out.println("server size is 0");
-          response = dsserver.receive();
-        }
-        System.out.println("Response before sched: " + response);
         if (i >= largestServers.size()) {
           i = 0;
         }
-        System.out.println(largestServers.getServer(i).toString());
-        response = dsserver.scheduleJob(job, largestServers.getServer(i));
+
+
+        if (servers.size() != 0) {
+          dsserver.send(dsserver.OK);
+          response = dsserver.receive();
+          response = dsserver.scheduleJob(job, servers.getServer(0));
+        } else {
+          System.out.println("server size is 0");
+          response = dsserver.receive();
+          response = dsserver.scheduleJob(job, largestServers.getServer(i));
+        }
         i++;
       }
     }
