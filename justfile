@@ -5,7 +5,7 @@ client:
 test1:
 	javac **/**/*.java -d Stage1/test/ && cd ./Stage1/test/ && ./demoS1.sh DSClient/DSClient.class -n
 test2:
-	javac **/**/*.java -d Stage2/test/DSClient && cd ./Stage2/test/ && ./stage2-test-aarch64 "java DSClient.DSClient" -o tt -n
+	javac **/**/*.java -d Stage2/test/ && cd ./Stage2/test/ && ./stage2-test-aarch64 "java DSClient.DSClient" -o tt -n
 
 server:
     ./ds-sim/src/pre-compiled/aarch64/ds-server -n -v all

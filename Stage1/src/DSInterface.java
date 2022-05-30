@@ -19,8 +19,9 @@ public class DSInterface {
   public final String AUTHENTTICATE = "AUTH";
   public final String NONE = "NONE";
   public final String QUIT = "QUIT";
-  public final String GETALL = "GETS All";
-  public final String GETCAPABLE = "GETS Capable";
+  public final String GET_ALL = "GETS All";
+  public final String GET_CAPABLE = "GETS Capable";
+  public final String GET_AVAILABLE = "GETS Avail";
   public final String SCHEDULE = "SCHD";
   public final String JOBN = "JOBN";
   public final String JOBP = "JOBP";
@@ -62,6 +63,11 @@ public class DSInterface {
       return null;
     }
   }
+
+  public void sendOK() throws IOException { send(OK); }
+  public void sendHello() throws IOException { send(HELLO); }
+  public void sendReady() throws IOException { send(READY); }
+
 
   /**
    * @dev: DS-Sim handhake protocol implementation
@@ -120,6 +126,7 @@ public class DSInterface {
         System.out.println("Job " + job.getId() + " scheduled");
       } else {
         System.out.println("Job " + job.getId() + " not scheduled");
+        // sendOK();
       }
       return res;
     } catch (IOException e) {
@@ -130,19 +137,31 @@ public class DSInterface {
 
   public Data getCapable(String spec) throws IOException {
     try {
-      send(GETCAPABLE + " " + spec);
+      send(GET_CAPABLE + " " + spec);
       String res = receive();
       return new Data(Integer.parseInt(split(res)[1]),
                       Integer.parseInt(split(res)[2]));
     } catch (IOException e) {
       System.err.println(e);
-      return null;
+      return new Data();
+    }
+  }
+
+  public Data getAvailable(String spec) throws IOException {
+    try {
+      send(GET_AVAILABLE + " " + spec);
+      String res = receive();
+      return new Data(Integer.parseInt(split(res)[1]),
+                      Integer.parseInt(split(res)[2]));
+    } catch (IOException e) {
+      System.err.println(e);
+      return new Data();
     }
   }
 
   public Data getAll() throws IOException {
     try {
-      send(GETALL);
+      send(GET_ALL);
       String res = receive();
       return new Data(Integer.parseInt(split(res)[1]),
                       Integer.parseInt(split(res)[2]));

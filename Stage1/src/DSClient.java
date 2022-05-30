@@ -14,7 +14,7 @@ public class DSClient {
       Scheduler scheduler = new Scheduler();
       dsserver.connect();
       dsserver.authenticateUser();
-      scheduler.lrrScheduler(dsserver);
+      scheduler.facScheduler(dsserver);
       dsserver.send(dsserver.QUIT);
       System.out.println("Scheduling successful and sent QUIT with response: " +
                          dsserver.receive());

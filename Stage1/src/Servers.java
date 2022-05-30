@@ -22,4 +22,13 @@ public class Servers<Server> implements Iterable<Server> {
   public int size() { return this.servers.size(); }
 
   public Iterator<Server> iterator() { return this.servers.iterator(); }
+
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    for (Server server : this.servers) {
+      sb.append(server.toString());
+      sb.append("\n");
+    }
+    return sb.toString();
+  }
 }
