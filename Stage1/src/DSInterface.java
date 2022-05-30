@@ -126,7 +126,6 @@ public class DSInterface {
         System.out.println("Job " + job.getId() + " scheduled");
       } else {
         System.out.println("Job " + job.getId() + " not scheduled");
-        // sendOK();
       }
       return res;
     } catch (IOException e) {
@@ -192,6 +191,17 @@ public class DSInterface {
     return highestCore;
   }
 
+  public int getLowestCore(Servers<Server> servers) {
+    int lowestCore = Integer.MAX_VALUE;
+    for (Server server : servers) {
+      int core = server.getCore();
+      if (server.getCore() < lowestCore) {
+        lowestCore = core;
+      }
+    }
+    return lowestCore;
+  }
+
   public String getFirstLargestServerType(Servers<Server> servers) {
     String largestServerType = "";
     // System.out.println("hights core is "+getHighestCore(servers));
@@ -204,7 +214,19 @@ public class DSInterface {
     return largestServerType;
   }
 
-  public Servers<Server> getLargestServersByType(Servers<Server> servers,
+  public String getFirstSmallestServerType(Servers<Server> servers) {
+    String smallestServerType = "";
+    // System.out.println("lowest core is "+getLowestCore(servers));
+    for (Server server : servers) {
+      if (server.getCore() == getLowestCore(servers)) {
+        smallestServerType = server.getType();
+        break;
+      }
+    }
+    return smallestServerType;
+  }
+
+  public Servers<Server> getServersByType(Servers<Server> servers,
                                                  String serverType) {
     Servers<Server> largestServers = new Servers<Server>();
     for (Server server : servers) {
