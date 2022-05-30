@@ -11,6 +11,7 @@ public class Scheduler {
     Data data;
     Servers<Server> servers = null;
     Servers<Server> allServers = null;
+    Servers<Server> largestServers = null;
     int i = 0;
     while (true) {
       Job job = dsserver.getJob();
@@ -19,45 +20,38 @@ public class Scheduler {
       }
 
       if (job.getName().equals("JOBN")) {
-        // Data data = dsserver.getCapable(job.getSpec());
         if (firstRun) {
           firstRun = false;
           System.out.println("First run..");
           data = dsserver.getCapable(job.getSpec());
           servers = dsserver.getServers(data.getNumServers());
           allServers = servers;
+          serverType = dsserver.getFirstLargestServerType(allServers);
+          largestServers =
+              dsserver.getLargestServersByType(allServers, serverType);
         } else {
           data = dsserver.getAvailable(job.getSpec());
-          // data = dsserver.getAll();
           servers = dsserver.getServers(data.getNumServers());
         }
-
-        if (gotLargestServer == false) {
-          serverType = dsserver.getFirstLargestServerType(allServers);
-          gotLargestServer = true;
-        }
-        Servers<Server> largestServers =
-            dsserver.getLargestServersByType(allServers, serverType);
-        if (i >= largestServers.size()) {
-          i = 0;
-        }
-
 
         if (servers.size() != 0) {
           dsserver.send(dsserver.OK);
           response = dsserver.receive();
           response = dsserver.scheduleJob(job, servers.getServer(0));
         } else {
-          System.out.println("server size is 0");
+          if (i >= largestServers.size()) {
+            i = 0;
+          }
           response = dsserver.receive();
           response = dsserver.scheduleJob(job, largestServers.getServer(i));
+          i++;
         }
-        i++;
+
       }
     }
   }
 
-public void lrrScheduler(DSInterface dsserver) throws Exception {
+  public void lrrScheduler(DSInterface dsserver) throws Exception {
     String response = "";
     String serverType = "";
     System.out.println("Scheduling via LRR");
