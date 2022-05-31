@@ -10,11 +10,10 @@ public class Scheduler {
     String response = "";
     String serverType = "";
     System.out.println("Scheduling via FAC");
-    Boolean gotLargestServer = false;
     Boolean firstRun = true;
     Data data;
-    Servers<Server> servers = null;
-    Servers<Server> allServers = null;
+    Servers<Server> availableServers = null;
+    Servers<Server> capableServers = null;
     Servers<Server> largestServers = null;
     int i = 0;
     while (true) {
@@ -27,21 +26,21 @@ public class Scheduler {
         if (firstRun) {
           firstRun = false;
           data = dsserver.getCapable(job.getSpec());
-          servers = dsserver.getServers(data.getNumServers());
-          allServers = servers;
-          serverType = dsserver.getFirstLargestServerType(allServers);
+          capableServers = dsserver.getServers(data.getNumServers());
+          serverType = dsserver.getFirstLargestServerType(capableServers);
           largestServers =
-              dsserver.getServersByType(allServers, serverType);
+              dsserver.getServersByType(capableServers, serverType);
+          availableServers = capableServers;
         } else {
           data = dsserver.getAvailable(job.getSpec());
-          servers = dsserver.getServers(data.getNumServers());
+          availableServers = dsserver.getServers(data.getNumServers());
         }
 
-        if (servers.size() != 0) {
+        if (availableServers.size() != 0) {
           dsserver.send(dsserver.OK);
           response = dsserver.receive();
           // NOTE:Schedules jobs to the first available
-          response = dsserver.scheduleJob(job, servers.getServer(0));
+          response = dsserver.scheduleJob(job, availableServers.getServer(0));
         } else {
           if (i >= largestServers.size()) {
             i = 0;
